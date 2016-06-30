@@ -129,7 +129,7 @@ class PcanBus(BusABC):
     def Reset(self):
         # Command the PCAN driver to reset the bus after an error.
 
-        status = self.m_objPCANBasic.Reset(self.channel_info)
+        status = self.m_objPCANBasic.Reset(self.m_PcanHandle)
 
         return status == PCAN_ERROR_OK
 
@@ -221,7 +221,7 @@ class PcanBus(BusABC):
 
     def flash(self, flash):
         """Turn on or off flashing of the device's LED for physical identification purposes."""
-        self.m_objPCANBasic.SetValue(self.channel_info, PCAN_CHANNEL_IDENTIFYING, bool(flash))
+        self.m_objPCANBasic.SetValue(self.m_PcanHandle, PCAN_CHANNEL_IDENTIFYING, bool(flash))
 
     def shutdown(self):
         self.m_objPCANBasic.Uninitialize(self.m_PcanHandle)
