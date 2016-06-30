@@ -122,7 +122,7 @@ class PcanBus(BusABC):
     def StatusOk(self):
         # Query the PCAN driver for bus status.
 
-        status = self.m_objPCANBasic.GetStatus(self.channel_info)
+        status = self.m_objPCANBasic.GetStatus(self.m_PcanHandle)
 
         return status == PCAN_ERROR_OK
 
