@@ -287,18 +287,12 @@ class SocketscanNative_Bus(BusABC):
         self.socket = createSocket(CAN_RAW)
 
         # Add any socket options such as can frame filters
-        if 'can_filters' in kwargs and len(kwargs['can_filters']) > 0:
+        can_filters = kwargs.get('can_filters', None)
+        if can_filters is not None:
             log.debug("Creating a filtered can bus")
-            can_filter_fmt = "={}I".format(2 * len(kwargs['can_filters']))
-            filter_data = []
-            for can_filter in kwargs['can_filters']:
-                filter_data.append(can_filter['can_id'])
-                filter_data.append(can_filter['can_mask'])
 
-            self.socket.setsockopt(socket.SOL_CAN_RAW,
-                                   socket.CAN_RAW_FILTER,
-                                   struct.pack(can_filter_fmt, *filter_data),
-                                   )
+        self.setFilters(can_filters)
+
         if channel is None:
             # We know we are socketcan, a channel "should" have
             # been given but we can assume "can0"
@@ -310,6 +304,25 @@ class SocketscanNative_Bus(BusABC):
 
     def __del__(self):
         self.socket.close()
+
+    def setFilters(self, can_filters=None):
+        if can_filters is None:
+            # Pass all messages
+            can_filters=[{
+                'can_id': 0,
+                'can_mask': 0
+            }]
+
+        can_filter_fmt = "={}I".format(2 * len(can_filters))
+        filter_data = []
+        for can_filter in can_filters:
+            filter_data.append(can_filter['can_id'])
+            filter_data.append(can_filter['can_mask'])
+
+        self.socket.setsockopt(socket.SOL_CAN_RAW,
+                               socket.CAN_RAW_FILTER,
+                               struct.pack(can_filter_fmt, *filter_data),
+                               )
 
     def recv(self, timeout=None):
 
