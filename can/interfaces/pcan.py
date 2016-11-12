@@ -28,7 +28,6 @@ else:
     timeout_clock = time.clock
 
 # Set up logging
-logging.basicConfig(level=logging.WARNING)
 log = logging.getLogger('can.pcan')
 
 
